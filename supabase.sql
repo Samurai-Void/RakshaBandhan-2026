@@ -18,6 +18,7 @@ create table if not exists public.people (
   letter text not null default '',
   reward_title text not null default 'A Special Treat',
   reward_text text not null default 'A little reward just for you. ❤️',
+  reward_image_path text,
   score integer not null default 100 check (score between 0 and 100),
   status text not null default 'IRREPLACEABLE',
   memories integer not null default 100 check (memories between 0 and 100),
@@ -91,6 +92,10 @@ create policy "Admins can update Rakhi photos" on storage.objects for update to 
 
 drop policy if exists "Admins can delete Rakhi photos" on storage.objects;
 create policy "Admins can delete Rakhi photos" on storage.objects for delete to authenticated using (bucket_id = 'rakhi-photos' and public.is_rakhi_admin());
+
+-- If you already ran this script before the reward-image feature existed,
+-- this line safely adds the new column without touching anything else:
+alter table public.people add column if not exists reward_image_path text;
 
 -- AFTER creating your admin user, run:
 -- insert into public.admins(user_id) values ('PASTE-ADMIN-USER-UUID-HERE') on conflict do nothing;
